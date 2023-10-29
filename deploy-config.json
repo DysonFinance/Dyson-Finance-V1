@@ -1,0 +1,40 @@
+{
+  "mainnet": {
+    "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "WBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    "addressBook": "",
+    "dysonToGoFactory": "",
+    "teacherAddress": ""
+  },
+  "goerli": {
+    "WETH": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+    "addressBook": "",
+    "dysonToGoFactory": "",
+    "teacherAddress": ""
+  },
+  "sepolia": {
+    "WETH": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+    "addressBook": "",
+    "dysonToGoFactory": "",
+    "teacherAddress": ""
+  },
+  "local": {
+    "WETH": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+    "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "WBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    "addressBook": "0xd46de20bd8d26eb661caccb0c86dd0907abfc59d",
+    "dysonToGoFactory": "0x457f389502a350915c2c3af3be8df6470360b259",
+    "teacherAddress": ""
+  },
+  "relyGauges": [
+    "",
+    "",
+    ""
+  ],
+  "relyPairs": [
+    "",
+    "",
+    ""
+  ]
+}

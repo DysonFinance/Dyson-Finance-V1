@@ -1,0 +1,16 @@
+[profile.default]
+src = 'src'
+out = 'out'
+libs = ['lib']
+remappings = ['@openzeppelin/=lib/openzeppelin-contracts/', 'interface/=src/interface/', 'util/=src/util']
+block_number = 10000
+block_timestamp = 1640966400  # 2022/01/01 00:00
+fs_permissions = [{ access = "read-write", path = "./deploy-config.json"}]
+
+[rpc_endpoints]
+goerli = "${GOERLI_RPC_URL}"
+
+[etherscan]
+goerli = { key = "${ETHERSCAN_KEY}" }
+
+# See more config options https://github.com/gakonst/foundry/tree/master/config
