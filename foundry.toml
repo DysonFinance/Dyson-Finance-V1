@@ -12,5 +12,6 @@ goerli = "${GOERLI_RPC_URL}"
 
 [etherscan]
 goerli = { key = "${ETHERSCAN_KEY}" }
+polygon = { key = "${POLYGON_ZKEVMSCAN_KEY}", url = "http://zkevm-rpc.com" }
 
 # See more config options https://github.com/gakonst/foundry/tree/master/config
