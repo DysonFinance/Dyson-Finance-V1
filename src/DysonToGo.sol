@@ -38,7 +38,8 @@ contract DysonToGo is IERC721Receiver {
     uint public adminFeeRatio;
     uint public spPool;
     uint public dysonPool;
-    uint public spPending;
+    uint public spSnapshot; //sp in farm at last update
+    uint public spPending; //sp to be added to pool
     uint public lastUpdateTime;
     uint public updatePeriod = 5 hours; //depends on agent tier
     uint private unlocked = 1;
@@ -175,7 +176,7 @@ contract DysonToGo is IERC721Receiver {
 
     function update() external lock returns (uint sp) {
         sp = _update();
-        spPending = sp;
+        spSnapshot = sp;
     }
 
     function _update() internal returns (uint spInFarm) {
@@ -184,8 +185,9 @@ contract DysonToGo is IERC721Receiver {
             lastUpdateTime = block.timestamp;
         }
         spInFarm = IFarm(FARM).balanceOf(address(this));
-        if(spInFarm < spPending) {
+        if(spInFarm < spSnapshot) {
             spPool += spPending;
+            spPending = 0;
             uint newBalance = IERC20(DYSON).balanceOf(address(this));
             if (newBalance > dysonPool) {
                 uint dysonAdded = newBalance - dysonPool;
@@ -209,7 +211,8 @@ contract DysonToGo is IERC721Receiver {
             output = IPair(pair).deposit1(address(this), input, minOutput, time);
         uint spAfter = IFarm(FARM).balanceOf(address(this));
         uint spAdded = spAfter - spBefore;
-        spPending = spAfter;
+        spPending += spAdded;
+        spSnapshot = spAfter;
         Position storage position = positions[pair][msg.sender][positionsCount[pair][msg.sender]];
         position.index = noteCount;
         position.spAmount = spAdded;
@@ -229,6 +232,7 @@ contract DysonToGo is IERC721Receiver {
     }
 
     function _claimDyson(address to, uint sp) internal returns (uint dysonAmount) {
+        spSnapshot = _update();
         dysonAmount = dysonPool * sp / (spPool + sp);
         spPool -= sp;
         dysonPool -= dysonAmount;
@@ -236,7 +240,6 @@ contract DysonToGo is IERC721Receiver {
     }
 
     function withdraw(address pair, uint index, address to) external lock returns (uint token0Amt, uint token1Amt, uint dysonAmt) {
-        _update();
         Position storage position = positions[pair][msg.sender][index];
         require(position.hasDepositedAsset, "not deposited");
         position.hasDepositedAsset = false;
@@ -246,7 +249,6 @@ contract DysonToGo is IERC721Receiver {
     }
 
     function withdrawETH(address pair, uint index, address to) external lock returns (uint token0Amt, uint token1Amt, uint dysonAmt) {
-        _update();
         Position storage position = positions[pair][msg.sender][index];
         require(position.hasDepositedAsset, "not deposited");
         position.hasDepositedAsset = false;
