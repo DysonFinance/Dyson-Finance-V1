@@ -200,8 +200,7 @@ contract DysonToGo is IERC721Receiver {
         }
     }
 
-    function _deposit(address tokenIn, address tokenOut, uint index, uint input, uint minOutput, uint time) internal returns (uint output) {
-        uint spBefore = _update();
+    function _deposit(address tokenIn, address tokenOut, uint index, uint input, uint minOutput, uint time, uint spBefore) internal returns (uint output) {
         address pair = pairFor(FACTORY, CODE_HASH, tokenIn, tokenOut, index);
         (address token0,) = sortTokens(tokenIn, tokenOut);
         uint noteCount = IPair(pair).noteCount(address(this));
@@ -222,13 +221,15 @@ contract DysonToGo is IERC721Receiver {
     }
 
     function deposit(address tokenIn, address tokenOut, uint index, uint input, uint minOutput, uint time) external lock returns (uint output) {
+        uint spBefore = _update();
         tokenIn.safeTransferFrom(msg.sender, address(this), input);
-        return _deposit(tokenIn, tokenOut, index, input, minOutput, time);
+        return _deposit(tokenIn, tokenOut, index, input, minOutput, time, spBefore);
     }
 
     function depositETH(address tokenOut, uint index, uint minOutput, uint time) external payable lock returns (uint output) {
+        uint spBefore = _update();
         IWETH(WETH).deposit{value: msg.value}();
-        return _deposit(WETH, tokenOut, index, msg.value, minOutput, time);
+        return _deposit(WETH, tokenOut, index, msg.value, minOutput, time, spBefore);
     }
 
     function _claimDyson(address to, uint sp) internal returns (uint dysonAmount) {
