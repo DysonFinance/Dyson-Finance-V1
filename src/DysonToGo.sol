@@ -232,6 +232,7 @@ contract DysonToGo is IERC721Receiver {
     }
 
     function _claimDyson(address to, uint sp) internal returns (uint dysonAmount) {
+        if (sp == 0) return 0;
         spSnapshot = _update();
         dysonAmount = dysonPool * sp / (spPool + sp);
         spPool -= sp;
