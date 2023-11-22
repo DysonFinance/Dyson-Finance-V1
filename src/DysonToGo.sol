@@ -48,8 +48,8 @@ contract DysonToGo is IERC721Receiver {
     mapping(address => mapping(address => mapping(uint => Position))) public positions;
 
     event TransferOwnership(address newOwner);
-    event Deposit(address indexed pair, address indexed user, uint index, uint spAmount);
-    event Withdraw(address indexed pair, address indexed user, uint index, uint dysonAmount);
+    event Deposit(address indexed pair, address indexed user, uint noteId, uint positionId, uint spAmount);
+    event Withdraw(address indexed pair, address indexed user, uint noteId, uint positionId, uint dysonAmount);
     event DYSONReceived(uint ownerAmount, uint poolAmount);
 
     constructor(address _owner, address _WETH, address _addressBook) {
@@ -212,12 +212,13 @@ contract DysonToGo is IERC721Receiver {
         uint spAdded = spAfter - spBefore;
         spPending += spAdded;
         spSnapshot = spAfter;
-        Position storage position = positions[pair][msg.sender][positionsCount[pair][msg.sender]];
+        uint positionId = positionsCount[pair][msg.sender];
+        Position storage position = positions[pair][msg.sender][positionId];
         position.index = noteCount;
         position.spAmount = spAdded;
         position.hasDepositedAsset = true;
         positionsCount[pair][msg.sender]++;
-        emit Deposit(pair, msg.sender, noteCount, spAdded);
+        emit Deposit(pair, msg.sender, noteCount, positionId, spAdded);
     }
 
     function deposit(address tokenIn, address tokenOut, uint index, uint input, uint minOutput, uint time) external lock returns (uint output) {
@@ -247,7 +248,7 @@ contract DysonToGo is IERC721Receiver {
         position.hasDepositedAsset = false;
         (token0Amt, token1Amt) = IPair(pair).withdraw(position.index, to);
         dysonAmt = _claimDyson(to, position.spAmount);
-        emit Withdraw(pair, msg.sender, index, dysonAmt);
+        emit Withdraw(pair, msg.sender, position.index ,index, dysonAmt);
     }
 
     function withdrawETH(address pair, uint index, address to) external lock returns (uint token0Amt, uint token1Amt, uint dysonAmt) {
@@ -264,7 +265,7 @@ contract DysonToGo is IERC721Receiver {
             token.safeTransfer(to, amount);
         }
         dysonAmt = _claimDyson(to, position.spAmount);
-        emit Withdraw(pair, msg.sender, index, dysonAmt);
+        emit Withdraw(pair, msg.sender, position.index ,index, dysonAmt);
     }
 
     function sign(bytes32 digest) external onlyOwner {
